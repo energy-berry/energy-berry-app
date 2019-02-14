@@ -1,4 +1,4 @@
-package com.energyberry.energyberry
+package com.energyberry.app
 
 import android.os.Bundle
 
