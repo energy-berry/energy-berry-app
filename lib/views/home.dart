@@ -4,7 +4,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white
+      color: Color.fromARGB(255, 247, 250, 253)
     );
   }
 }

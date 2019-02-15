@@ -30,25 +30,47 @@ class _NavigationViewState extends State<NavigationView> {
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
             canvasColor: Colors.white,
-            primaryColor : Color.fromARGB(255, 255, 48, 84)
+            primaryColor : Color.fromARGB(255, 67, 111, 255)
         ),
         child: BottomNavigationBar(
-            currentIndex: currentViewIndex,
-            onTap: _onNavigationTapped,
+          currentIndex: currentViewIndex,
+          onTap: _onNavigationTapped,
             items: [
               BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
+                  activeIcon: Image.asset(
+                   "assets/img/navigation/home_active.png",
+                    width: 30,
+                  ),
+                  icon: Image.asset(
+                    "assets/img/navigation/home.png",
+                    width: 30,
+                  ),
                   title : Text("Home")
               ),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.lightbulb_outline),
+                  activeIcon: Image.asset(
+                    "assets/img/navigation/bulb_active.png",
+                    width: 30,
+                  ),
+                  icon: Image.asset(
+                   "assets/img/navigation/bulb.png",
+                    width: 30,
+                  ),
                   title : Text("Consumo")
               ),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  title : Text("Perfil")
+                  activeIcon: Image.asset(
+                    "assets/img/navigation/settings_active.png",
+                    width: 30,
+                  ),
+                  icon: Image.asset(
+                   "assets/img/navigation/settings.png",
+                    width: 30,
+                  ),
+                  title : Text("Ajustes")
               )
-            ]),
+            ],
+        ),
       ),
     );
   }
