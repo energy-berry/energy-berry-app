@@ -12,15 +12,21 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var chart = Container(
-        height: 160,
+        height: 210,
         margin: EdgeInsets.only(left: 12, right: 12),
         width: double.infinity,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: <BoxShadow>[
-              BoxShadow(color: Colors.black12, blurRadius: 8, spreadRadius: 2)
-            ],
-            color: Colors.white));
+          image: DecorationImage(
+            image: AssetImage("assets/img/chart.png"),
+            fit: BoxFit.cover,
+            alignment: Alignment(0, -1)
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: <BoxShadow>[
+            BoxShadow(color: Colors.black12, blurRadius: 8, spreadRadius: 2)
+          ],
+          color: Colors.white)
+    );
 
     var grid = Wrap(
       alignment: WrapAlignment.center,
@@ -45,7 +51,7 @@ class Home extends StatelessWidget {
             child: Container(
               alignment: Alignment(1,0),
               child: ContextPicker(),
-              margin: EdgeInsets.only(top: 28, right: 12)
+              margin: EdgeInsets.only(top: 24, right: 12)
             )
           )
         ],
