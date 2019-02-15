@@ -26,7 +26,11 @@ class _NavigationViewState extends State<NavigationView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Energy Berry'),
+      ),
       body: views[currentViewIndex],
+      backgroundColor: Color.fromARGB(255, 247, 250, 253),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
             canvasColor: Colors.white,
