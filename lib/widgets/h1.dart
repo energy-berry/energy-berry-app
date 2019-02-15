@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+// Widget:
+
+// Text for important things
+// It's the equivalent of html h1's
 class H1 extends StatelessWidget {
 
   var title;

@@ -1,4 +1,5 @@
 import 'package:energy_berry/views/home.dart';
+import 'package:energy_berry/views/usage.dart';
 import 'package:flutter/material.dart';
 
 class NavigationView extends StatefulWidget {
@@ -13,8 +14,8 @@ class _NavigationViewState extends State<NavigationView> {
 
   final List<Widget> views = <Widget>[
     Home(),
-    Home(),
-    Home()
+    Usage(),
+    Usage()
   ];
 
   void _onNavigationTapped(int index) {

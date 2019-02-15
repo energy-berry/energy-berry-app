@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 // This is the type used by the popup menu below.
 enum WhyFarther { harder, smarter, selfStarter, tradingCharter }
 
+// Widget:
+//
+// Picker to select home context
 class ContextPicker extends StatefulWidget {
   @override
   _ContextPickerState createState() => _ContextPickerState();
