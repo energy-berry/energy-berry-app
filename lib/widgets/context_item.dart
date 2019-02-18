@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -5,10 +7,39 @@ import 'package:flutter_blue/flutter_blue.dart';
 //
 // Card to manipulate an item in different home contexts
 class ContextItem extends StatefulWidget {
-  var title;
-  var activated;
 
-  ContextItem(this.title, {this.activated = false});
+  // Device state and info
+  var activated;
+  var title = "No name";
+
+  // BLE data
+  StreamSubscription<BluetoothDeviceState> deviceConnection;
+  List<BluetoothService> services = new List();
+  BluetoothDevice device;
+  FlutterBlue flutterBlue = FlutterBlue.instance;
+
+  // When instantiate try to connect
+  ContextItem(this.device, {this.activated = false}) {
+    title = device.name + " " + device.id.id;
+
+    deviceConnection = flutterBlue.connect(device).listen((s) {
+      if(s == BluetoothDeviceState.connected) {
+        print("¡Conectado!");
+        device.discoverServices().then((s) {
+          print(s.length);
+          s.forEach((sb) => print('Servicio agregado ${sb.uuid}'));
+          services = s;
+        });
+      }
+    });
+
+    deviceConnection.onError(_onErrorHandler);
+  }
+
+  void _onErrorHandler(error) {
+    print('Hubo un error ${error}');
+    deviceConnection.cancel();
+  }
 
   @override
   _ContextItemState createState() => _ContextItemState();
@@ -16,14 +47,24 @@ class ContextItem extends StatefulWidget {
 
 class _ContextItemState extends State<ContextItem> {
 
-  void _onTap() {
-    var title = widget.title.toString();
-    var activated = widget.activated.toString();
+  // 0x12 0x3_
+  // First 15 bits are used for BLE configuration purposes
+  _writeCharacteristic(BluetoothCharacteristic c, var value) async {
+    widget.device.writeCharacteristic(c, [0x12, value],
+        type: CharacteristicWriteType.withResponse);
+    setState(() {});
+  }
 
-    print("$title esta en $activated");
+  void _onTap() {
+    print("Tap context item");
 
     setState(() {
       widget.activated = !widget.activated;
+
+      widget.services.forEach((s) {
+        if(s.uuid.toString().toUpperCase() == '6E400001-B5A3-F393-E0A9-E50E24DCCA9E')
+          s.characteristics.forEach((c) => _writeCharacteristic(c, widget.activated ? 0x31 : 0x30));
+      });
     });
   }
 
