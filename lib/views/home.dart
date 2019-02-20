@@ -63,12 +63,14 @@ class _HomeState extends State<Home> {
 
         if (!widget.devices.containsKey(scanResult.device.id.id))
           widget.devices[scanResult.device.id.id] = scanResult.device;
-      }).onDone(() =>
-        setState((){
+      }).onDone(() {
+        widget.devices["Pruebas"] = BluetoothDevice(id: DeviceIdentifier("Pruebas"), name: "222");
+
+        setState(() {
           Navigator.pop(context); //pop dialog
           widget.scanning = false;
-        })
-      );
+        });
+      });
     }
   }
 

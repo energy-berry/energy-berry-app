@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:energy_berry/widgets/dimmer_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -45,7 +46,7 @@ class ContextItem extends StatefulWidget {
   _ContextItemState createState() => _ContextItemState();
 }
 
-class _ContextItemState extends State<ContextItem> {
+class _ContextItemState extends State<ContextItem> implements DimmerListener {
 
   // 0x12 0x3_
   // First 15 bits are used for BLE configuration purposes
@@ -56,8 +57,6 @@ class _ContextItemState extends State<ContextItem> {
   }
 
   void _onTap() {
-    print("Tap context item");
-
     setState(() {
       widget.activated = !widget.activated;
 
@@ -66,6 +65,10 @@ class _ContextItemState extends State<ContextItem> {
           s.characteristics.forEach((c) => _writeCharacteristic(c, widget.activated ? 0x31 : 0x30));
       });
     });
+  }
+
+  void _showDialog() {
+    showDialog(context: context, builder: (BuildContext context) => DimmerDialog(this));
   }
 
   @override
@@ -77,6 +80,7 @@ class _ContextItemState extends State<ContextItem> {
           color: widget.activated ? Color.fromARGB(255, 67, 111, 255) : Colors.white,
           child: InkWell(
             onTap: _onTap,
+            onLongPress: _showDialog,
             splashColor: Color.fromARGB(100, 67, 111, 255),
             child: Container(
               padding: EdgeInsets.all(6),
@@ -103,5 +107,13 @@ class _ContextItemState extends State<ContextItem> {
                 ],
               ),
         ))));
+  }
+
+  @override
+  void onDimmerChanged(int value) {
+    widget.services.forEach((s) {
+      if(s.uuid.toString().toUpperCase() == '6E400001-B5A3-F393-E0A9-E50E24DCCA9E')
+        s.characteristics.forEach((c) => _writeCharacteristic(c, value & 0xff));
+    });
   }
 }
