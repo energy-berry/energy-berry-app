@@ -34,13 +34,24 @@ class _HomeState extends State<Home> {
         child: Dialog(
           child: Container(
             padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.pink
+            ),
             child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(),
+              CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
               Container(
-                margin: EdgeInsets.all(8),
-                child: Text("Buscando berries")
+                margin: EdgeInsets.only(top: 8, right: 8, left: 12, bottom: 8),
+                child: Text(
+                  "Buscando berries",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 18
+                  ),
+                )
               ),
             ],
           ),
