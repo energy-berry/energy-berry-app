@@ -13,7 +13,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 // like energy usage, contexts and context manipulation
 class Home extends StatefulWidget {
 
-  FlutterBlue flutterBlue = FlutterBlue.instance;
+  static FlutterBlue flutterBlue = FlutterBlue.instance;
   Map devices = Map();
   var scanning = false;
 
@@ -48,7 +48,7 @@ class _HomeState extends State<Home> {
                 child: Text(
                   "Buscando berries",
                   style: TextStyle(
-                    color: Colors.red,
+                    color: Colors.white,
                     fontSize: 18
                   ),
                 )
@@ -62,8 +62,8 @@ class _HomeState extends State<Home> {
       print("Escaneando");
 
       /// Start scanning
-      widget.flutterBlue.scan(
-          timeout: const Duration(seconds: 3)
+      Home.flutterBlue.scan(
+          timeout: const Duration(seconds: 4)
       ).listen((scanResult) {
         /*print('DeviceId: ${scanResult.device.id}');
         print('DeviceName: ${scanResult.device.name}');
@@ -75,8 +75,6 @@ class _HomeState extends State<Home> {
         if (!widget.devices.containsKey(scanResult.device.id.id))
           widget.devices[scanResult.device.id.id] = scanResult.device;
       }).onDone(() {
-        widget.devices["Pruebas"] = BluetoothDevice(id: DeviceIdentifier("Pruebas"), name: "222");
-
         setState(() {
           Navigator.pop(context); //pop dialog
           widget.scanning = false;
@@ -106,9 +104,10 @@ class _HomeState extends State<Home> {
             color: Colors.white)
     );
 
-    widget.devices.forEach((id, d) =>
-      berries.add(ContextItem(d))
-    );
+    widget.devices.forEach((id, d) {
+      if (d.name.toString().isNotEmpty)
+        berries.add(ContextItem(d));
+    });
 
     var grid = Wrap(
       alignment: WrapAlignment.center,

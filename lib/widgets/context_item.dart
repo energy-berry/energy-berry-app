@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:energy_berry/views/home.dart';
 import 'package:energy_berry/widgets/dimmer_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -17,29 +18,27 @@ class ContextItem extends StatefulWidget {
   StreamSubscription<BluetoothDeviceState> deviceConnection;
   List<BluetoothService> services = new List();
   BluetoothDevice device;
-  FlutterBlue flutterBlue = FlutterBlue.instance;
+  BluetoothDeviceState stateBlue = null;
 
   // When instantiate try to connect
   ContextItem(this.device, {this.activated = false}) {
+    Home.flutterBlue.setLogLevel(LogLevel.emergency);
     title = device.name + " " + device.id.id;
-
-    deviceConnection = flutterBlue.connect(device).listen((s) {
-      if(s == BluetoothDeviceState.connected) {
-        print("¡Conectado!");
-        device.discoverServices().then((s) {
-          print(s.length);
-          s.forEach((sb) => print('Servicio agregado ${sb.uuid}'));
-          services = s;
-        });
-      }
-    });
-
-    deviceConnection.onError(_onErrorHandler);
   }
 
   void _onErrorHandler(error) {
-    print('Hubo un error ${error}');
-    deviceConnection.cancel();
+    print('Hubo un error :c ${error}');
+    //deviceConnection.cancel();
+    /*device.discoverServices().then((s) {
+      services.clear();
+      print(s.length);
+      s.forEach((sb) {
+        // print('Servicio agregado ${sb.uuid}');
+
+        //sb.characteristics.forEach((sc) => print("Caracteristica ${sc.uuid}"));
+      });
+      services = s;
+    });*/
   }
 
   @override
@@ -51,20 +50,65 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener {
   // 0x12 0x3_
   // First 15 bits are used for BLE configuration purposes
   _writeCharacteristic(BluetoothCharacteristic c, var value) async {
-    widget.device.writeCharacteristic(c, [0x12, value],
-        type: CharacteristicWriteType.withResponse);
+    print("Writing value");
+    print("Info: ${c.uuid}");
+
+    c.descriptors.forEach((des) => print("descru: ${des.uuid}"));
+
+    widget.device.writeCharacteristic(c, [value]);
     setState(() {});
   }
 
   void _onTap() {
-    setState(() {
-      widget.activated = !widget.activated;
+    if(widget.stateBlue != BluetoothDeviceState.connected) {
+      print("Intentando conectar");
 
-      widget.services.forEach((s) {
-        if(s.uuid.toString().toUpperCase() == '6E400001-B5A3-F393-E0A9-E50E24DCCA9E')
-          s.characteristics.forEach((c) => _writeCharacteristic(c, widget.activated ? 0x31 : 0x30));
+      widget.deviceConnection = Home.flutterBlue.connect(widget.device, autoConnect: false).listen((s) {
+        widget.stateBlue = s;
+        print("npi ${s}");
+
+        if(s == BluetoothDeviceState.connected) {
+          print("¡Conectado!");
+          widget.device.discoverServices().then((s) {
+            widget.services.clear();
+            print(s.length);
+            s.forEach((sb) {
+              print('Servicio agregado ${sb.uuid}');
+
+              sb.characteristics.forEach((sc) => print("Caracteristica ${sc.uuid}"));
+            });
+            widget.services = s;
+          });
+        }
       });
-    });
+
+      widget.deviceConnection.onError(widget._onErrorHandler);
+
+      widget.device.onStateChanged().listen((s) {
+        print("Imprimio algo $s");
+      });
+    } else {
+      setState(() {
+        widget.activated = !widget.activated;
+
+        widget.services.forEach((s) {
+          print("Si hay servicio ${s.uuid}");
+
+          if(s.uuid.toString() == '0000180f-0000-1000-8000-00805f9b34fb')
+            s.characteristics.forEach((c) => _writeCharacteristic(c, widget.activated ? 0x00 : 0x64));
+        });
+      });
+      // Remove all value changed listeners
+      /*widget.services..forEach((uuid, sub) => sub.cancel());
+      valueChangedSubscriptions.clear();
+      deviceStateSubscription?.cancel();
+      deviceStateSubscription = null;
+      deviceConnection?.cancel();
+      deviceConnection = null;
+      setState(() {
+        device = null;
+      });*/
+    }
   }
 
   void _showDialog() {
@@ -111,8 +155,9 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener {
 
   @override
   void onDimmerChanged(int value) {
+    print("Valor cambiado ${value}");
     widget.services.forEach((s) {
-      if(s.uuid.toString().toUpperCase() == '6E400001-B5A3-F393-E0A9-E50E24DCCA9E')
+      if(s.uuid.toString() == '0000180f-0000-1000-8000-00805f9b34fb')
         s.characteristics.forEach((c) => _writeCharacteristic(c, value & 0xff));
     });
   }

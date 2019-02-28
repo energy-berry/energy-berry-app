@@ -42,7 +42,7 @@ class _DimmerDialogState extends State<DimmerDialog> {
                 activeColor: Colors.amber,
                 inactiveColor: Colors.black12,
                 label: '${widget.value} %',
-                divisions: 10,
+                divisions: 20,
                 min: 0,
                 max: 100,
                 value: widget.value.toDouble()
