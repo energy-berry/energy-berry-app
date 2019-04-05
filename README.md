@@ -1,4 +1,4 @@
-# energy_berry
+# Energy Berry Flutter App
 Wireless system that includes HW/SW modules for the energy saving.
 ![](https://github.com/energy-berry/energy-berry-app/blob/master/readme_assets/screenshots.jpg?raw=true)
 
