@@ -5,6 +5,8 @@ import 'package:energy_berry/widgets/context_picker.dart';
 import 'package:energy_berry/widgets/h1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:intl/intl.dart';
 
 
 // View:
@@ -16,12 +18,16 @@ class Home extends StatefulWidget {
   static FlutterBlue flutterBlue = FlutterBlue.instance;
   Map devices = Map();
   var scanning = false;
+  DateTime date;
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+
+  void _showPicker() {
+  }
 
   //Scan for nearby BLE devices
   void _scan() {
@@ -136,11 +142,20 @@ class _HomeState extends State<Home> {
       ),
 
       Container(
-        alignment: Alignment.center,
-        child: RaisedButton(
-            onPressed: _scan,
-            child: Text("Buscar berries")
-        )
+          alignment: Alignment.center,
+          child: RaisedButton(
+              onPressed: _scan,
+              child: Text("Buscar berries")
+          )
+      ),
+
+      DateTimePickerFormField(
+        inputType: InputType.time,
+        format: DateFormat("HH:mm"),
+        editable: false,
+        decoration: InputDecoration(
+        labelText: 'Date/Time', hasFloatingPlaceholder: false),
+        onChanged: (dt) => setState(() => widget.date = dt),
       ),
 
       grid
