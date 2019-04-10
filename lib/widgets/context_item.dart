@@ -21,14 +21,50 @@ class ContextItem extends StatefulWidget {
   BluetoothDevice device;
   BluetoothDeviceState stateBlue = null;
 
-  // When instantiate try to connect
   ContextItem(this.device, {this.activated = false}) {
     Home.flutterBlue.setLogLevel(LogLevel.emergency);
     title = device.name + " " + device.id.id;
   }
 
-  void _onErrorHandler(error) {
-    print('Hubo un error :c ${error}');
+  void _onErrorHandler(BuildContext context, String error) {
+    print('There was an error :c ${error}');
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      child: Dialog(
+        child: Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Color.fromARGB(255, 223, 230, 233)
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 8, right: 8, left: 12, bottom: 8),
+                child: Text(
+                  error,
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 213, 48, 48),
+                    fontSize: 18
+                  ),
+                )
+              ),
+
+              FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.deepPurple, fontSize: 18.0),
+                  ))
+            ],
+          ),
+        ),
+      )
+    );
+
     //deviceConnection.cancel();
     /*device.discoverServices().then((s) {
       services.clear();
@@ -54,19 +90,16 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
     print("Writing value");
     print("Info: ${c.uuid}");
 
-    c.descriptors.forEach((des) => print("descru: ${des.uuid}"));
-
     widget.device.writeCharacteristic(c, value);
     setState(() {});
   }
 
   void _onTap() {
     if(widget.stateBlue != BluetoothDeviceState.connected) {
-      print("Intentando conectar");
+      print("Trying to connect...");
 
       widget.deviceConnection = Home.flutterBlue.connect(widget.device, autoConnect: false).listen((s) {
         widget.stateBlue = s;
-        print("npi ${s}");
 
         if(s == BluetoothDeviceState.connected) {
           print("¡Conectado!");
@@ -74,9 +107,9 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
             widget.services.clear();
             print(s.length);
             s.forEach((sb) {
-              print('Servicio agregado ${sb.uuid}');
+              print('Service detected ${sb.uuid}');
 
-              sb.characteristics.forEach((sc) => print("Caracteristica ${sc.uuid}"));
+              sb.characteristics.forEach((sc) => print("Characteristic ${sc.uuid}"));
             });
             widget.services = s;
           });
@@ -86,15 +119,13 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
       widget.deviceConnection.onError(widget._onErrorHandler);
 
       widget.device.onStateChanged().listen((s) {
-        print("Imprimio algo $s");
+        print("Device State changed: $s");
       });
     } else {
       setState(() {
         widget.activated = !widget.activated;
 
         widget.services.forEach((s) {
-          print("Si hay servicio ${s.uuid}");
-
           if(s.uuid.toString() == '0000180f-0000-1000-8000-00805f9b34fb')
             s.characteristics.forEach((c) => _writeCharacteristic(c, [widget.activated ? 0x00 : 0x64]));
         });

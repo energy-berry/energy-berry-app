@@ -33,7 +33,8 @@ class _DimmerDialogState extends State<DimmerDialog> {
 
     return Dialog(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0)), //this right here
+            borderRadius: BorderRadius.circular(12.0)
+        ), //this right here
         child: Container(
           height: 360.0,
           width: 300.0,
