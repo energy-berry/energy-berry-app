@@ -4,6 +4,7 @@ import 'package:energy_berry/views/home.dart';
 import 'package:energy_berry/widgets/dimmer_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'dart:convert';
 
 // Widget:
 //
@@ -45,7 +46,7 @@ class ContextItem extends StatefulWidget {
   _ContextItemState createState() => _ContextItemState();
 }
 
-class _ContextItemState extends State<ContextItem> implements DimmerListener {
+class _ContextItemState extends State<ContextItem> implements DimmerListener, DialogListener {
 
   // 0x12 0x3_
   // First 15 bits are used for BLE configuration purposes
@@ -55,7 +56,7 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener {
 
     c.descriptors.forEach((des) => print("descru: ${des.uuid}"));
 
-    widget.device.writeCharacteristic(c, [value]);
+    widget.device.writeCharacteristic(c, value);
     setState(() {});
   }
 
@@ -95,7 +96,7 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener {
           print("Si hay servicio ${s.uuid}");
 
           if(s.uuid.toString() == '0000180f-0000-1000-8000-00805f9b34fb')
-            s.characteristics.forEach((c) => _writeCharacteristic(c, widget.activated ? 0x00 : 0x64));
+            s.characteristics.forEach((c) => _writeCharacteristic(c, [widget.activated ? 0x00 : 0x64]));
         });
       });
       // Remove all value changed listeners
@@ -112,7 +113,7 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener {
   }
 
   void _showDialog() {
-    showDialog(context: context, builder: (BuildContext context) => DimmerDialog(this));
+    showDialog(context: context, builder: (BuildContext context) => DimmerDialog(this, this));
   }
 
   @override
@@ -155,10 +156,20 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener {
 
   @override
   void onDimmerChanged(int value) {
-    print("Valor cambiado ${value}");
     widget.services.forEach((s) {
-      if(s.uuid.toString() == '0000180f-0000-1000-8000-00805f9b34fb')
-        s.characteristics.forEach((c) => _writeCharacteristic(c, value & 0xff));
+      if(s.uuid.toString() == '0000180f-0000-1000-8000-00805f9b34fb') // Battery Service
+        s.characteristics.forEach((c) => _writeCharacteristic(c, [value & 0xff]));
     });
   }
+
+  @override
+  void onDialogOk(DateTime time) {
+    var str = time.millisecondsSinceEpoch.toString();
+
+    widget.services.forEach((s) {
+      if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') // Current Time Service
+        s.characteristics.forEach((c) => _writeCharacteristic(c, utf8.encode(str)));
+    });
+  }
+
 }
