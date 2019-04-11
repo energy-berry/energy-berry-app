@@ -11,7 +11,10 @@ class DimmerDialog extends StatefulWidget {
   DialogListener dialogListener;
   DateTime date;
 
-  DimmerDialog(this.listener, this.dialogListener);
+  DimmerDialog(this.listener, this.dialogListener)
+  {
+    date = new DateTime.now();
+  }
 
   @override
   _DimmerDialogState createState() => _DimmerDialogState();
@@ -29,7 +32,7 @@ class _DimmerDialogState extends State<DimmerDialog> {
   @override
   Widget build(BuildContext context) {
     dateNow = new DateTime.now();
-    widget.date = new DateTime.now();
+    dateNow.add(Duration(hours: -6)); // Remove Mexico City offset
 
     return Dialog(
         shape: RoundedRectangleBorder(
@@ -70,7 +73,7 @@ class _DimmerDialogState extends State<DimmerDialog> {
                   decoration: InputDecoration(
                       labelText: 'Hora', hasFloatingPlaceholder: false),
                   onChanged: (dt) => setState(() {
-                      widget.date = new DateTime(dateNow.year, dateNow.month, dateNow.day, dt.hour, dt.minute, dt.second, dt.millisecond, dt.microsecond);
+                    widget.date = new DateTime(dateNow.year, dateNow.month, dateNow.day, dt.hour, dt.minute, dt.second);
                   }),
                 ),
                 padding: EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
@@ -78,7 +81,6 @@ class _DimmerDialogState extends State<DimmerDialog> {
               
               FlatButton(
                   onPressed: () {
-                    print(widget.date.millisecondsSinceEpoch);
                     widget.dialogListener.onDialogOk(widget.date);
                     Navigator.of(context).pop();
                   },

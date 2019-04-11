@@ -11,6 +11,8 @@ import 'package:flutter_blue/flutter_blue.dart';
 //
 // Show general information about energy berry
 // like energy usage, contexts and context manipulation
+//
+// In our project we manage the concept of Context, which is a set
 class Home extends StatefulWidget {
 
   static FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -26,7 +28,7 @@ class _HomeState extends State<Home> {
   //Scan for nearby BLE devices
   void _scan() {
     if(widget.scanning) {
-      print("Already scanning");
+      print("Wait amigo.... Already scanning");
     } else {
       showDialog(
         context: context,
@@ -59,7 +61,7 @@ class _HomeState extends State<Home> {
         )
       );
 
-      print("Escaneando");
+      print("Scanning... ");
 
       /// Start scanning
       Home.flutterBlue.scan(
@@ -104,6 +106,9 @@ class _HomeState extends State<Home> {
             color: Colors.white)
     );
 
+    //BluetoothDevice testDevice = new BluetoothDevice(id: DeviceIdentifier("00000000-0000-0000-0000-987bf3767eea"), name: "Test");
+    //berries.add(ContextItem(testDevice));
+
     widget.devices.forEach((id, d) {
       if (d.name.toString().isNotEmpty)
         berries.add(ContextItem(d));
@@ -115,7 +120,6 @@ class _HomeState extends State<Home> {
 
       children: berries
     );
-
 
     return ListView(children: <Widget>[
       H1("Consumo del mes"),

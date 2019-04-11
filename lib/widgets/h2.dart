@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // Widget:
 
 // Text for important things
-// It's the equivalent of html h1's
+// It's the equivalent of html h2's
 class H2 extends StatelessWidget {
 
   var title;
@@ -12,7 +12,6 @@ class H2 extends StatelessWidget {
   double marginRight;
   double marginBottom;
   double marginTop;
-
 
   H2(this.title, {this.marginLeft = 12, this.marginRight = 12, this.marginBottom = 12,
       this.marginTop = 12});

@@ -5,7 +5,7 @@ enum WhyFarther { harder, smarter, selfStarter, tradingCharter }
 
 // Widget:
 //
-// Picker to select home context
+// Picker to select a context
 class ContextPicker extends StatefulWidget {
   @override
   _ContextPickerState createState() => _ContextPickerState();

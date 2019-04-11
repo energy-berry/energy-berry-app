@@ -26,10 +26,10 @@ class ContextItem extends StatefulWidget {
     title = device.name + " " + device.id.id;
   }
 
-  void _onErrorHandler(BuildContext context, String error) {
+  void _onErrorHandler(error) {
     print('There was an error :c ${error}');
 
-    showDialog(
+    /*showDialog(
       context: context,
       barrierDismissible: false,
       child: Dialog(
@@ -63,7 +63,7 @@ class ContextItem extends StatefulWidget {
           ),
         ),
       )
-    );
+    );*/
 
     //deviceConnection.cancel();
     /*device.discoverServices().then((s) {
@@ -102,7 +102,7 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
         widget.stateBlue = s;
 
         if(s == BluetoothDeviceState.connected) {
-          print("¡Conectado!");
+          print("Conected!");
           widget.device.discoverServices().then((s) {
             widget.services.clear();
             print(s.length);
@@ -118,8 +118,8 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
 
       widget.deviceConnection.onError(widget._onErrorHandler);
 
-      widget.device.onStateChanged().listen((s) {
-        print("Device State changed: $s");
+      widget.device.onStateChanged().listen((newState) {
+        print("Device State changed: $newState");
       });
     } else {
       setState(() {
@@ -195,11 +195,12 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
 
   @override
   void onDialogOk(DateTime time) {
-    var str = time.millisecondsSinceEpoch.toString();
+    int epoch = (time.millisecondsSinceEpoch/1000).floor(); // Convert to seconds
+    print("My epoch $epoch");
 
     widget.services.forEach((s) {
       if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') // Current Time Service
-        s.characteristics.forEach((c) => _writeCharacteristic(c, utf8.encode(str)));
+        s.characteristics.forEach((c) => _writeCharacteristic(c, utf8.encode(epoch.toString())));
     });
   }
 
