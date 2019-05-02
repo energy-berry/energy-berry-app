@@ -17,7 +17,6 @@ class Usage extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,20 +45,20 @@ class Usage extends StatelessWidget {
   }
 
   /// Create one series with sample hard coded data.
-  static List<charts.Series<LinearSales, int>> _createSampleData() {
+  static List<charts.Series<LinearUsage, int>> _createSampleData() {
     final data = [
-      new LinearSales(0, 5),
-      new LinearSales(1, 25),
-      new LinearSales(2, 100),
-      new LinearSales(3, 75),
+      new LinearUsage(0, 5),
+      new LinearUsage(1, 25),
+      new LinearUsage(2, 100),
+      new LinearUsage(3, 75),
     ];
 
     return [
-      new charts.Series<LinearSales, int>(
+      new charts.Series<LinearUsage, int>(
         id: 'Sales',
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (LinearSales sales, _) => sales.year,
-        measureFn: (LinearSales sales, _) => sales.sales,
+        domainFn: (LinearUsage usage, _) => usage.day,
+        measureFn: (LinearUsage usage, _) => usage.watts,
         data: data,
       )
     ];
@@ -67,9 +66,9 @@ class Usage extends StatelessWidget {
 }
 
 /// Sample linear data type.
-class LinearSales {
-  final int year;
-  final int sales;
+class LinearUsage {
+  final int day;
+  final int watts;
 
-  LinearSales(this.year, this.sales);
+  LinearUsage(this.day, this.watts);
 }

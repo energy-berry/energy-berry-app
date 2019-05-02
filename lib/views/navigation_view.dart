@@ -16,18 +16,21 @@ class _NavigationViewState extends State<NavigationView> {
   static final random = new Random();
 
   static final data = [
-    new LinearSales(0, random.nextInt(100)),
-    new LinearSales(1, random.nextInt(100)),
-    new LinearSales(2, random.nextInt(100)),
-    new LinearSales(3, random.nextInt(100)),
+    new LinearUsage(1, random.nextInt(100)),
+    new LinearUsage(7, random.nextInt(100)),
+    new LinearUsage(15, random.nextInt(100)),
+    new LinearUsage(21, random.nextInt(100)),
   ];
 
-  static List<charts.Series<LinearSales, num>> list = [
-    new charts.Series<LinearSales, int>(
+  static List<charts.Series<LinearUsage, num>> list = [
+    new charts.Series<LinearUsage, int>(
       id: 'Sales',
-      colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-      domainFn: (LinearSales sales, _) => sales.year,
-      measureFn: (LinearSales sales, _) => sales.sales,
+      colorFn: (_, __) => charts.MaterialPalette.purple.shadeDefault,
+      domainFn: (LinearUsage usage, _) => usage.day,
+      measureFn: (LinearUsage usage, _) => usage.watts,
+      fillColorFn: (_, __) => charts.MaterialPalette.purple.shadeDefault,
+      displayName: "a",
+      labelAccessorFn: (LinearUsage usage, _) => usage.watts.toString(),
       data: data,
     )
   ];
