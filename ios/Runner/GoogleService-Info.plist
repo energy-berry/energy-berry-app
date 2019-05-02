@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>279375293047-4l6ft4goerjb2lp4sjkbnm3ue62hrk8k.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.279375293047-4l6ft4goerjb2lp4sjkbnm3ue62hrk8k</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDy9NleQprH2R6y7gzoA2RkvKcNL10DQ4I</string>
+	<key>GCM_SENDER_ID</key>
+	<string>279375293047</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.energyberry.energyBerry</string>
+	<key>PROJECT_ID</key>
+	<string>energy-berry</string>
+	<key>STORAGE_BUCKET</key>
+	<string>energy-berry.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:279375293047:ios:e80bbca69ce686ef</string>
+	<key>DATABASE_URL</key>
+	<string>https://energy-berry.firebaseio.com</string>
+</dict>
+</plist>

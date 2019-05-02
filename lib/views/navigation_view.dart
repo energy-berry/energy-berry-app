@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:energy_berry/views/home.dart';
 import 'package:energy_berry/views/usage.dart';
 import 'package:flutter/material.dart';
@@ -29,12 +30,10 @@ class _NavigationViewState extends State<NavigationView> {
       domainFn: (LinearUsage usage, _) => usage.day,
       measureFn: (LinearUsage usage, _) => usage.watts,
       fillColorFn: (_, __) => charts.MaterialPalette.purple.shadeDefault,
-      displayName: "a",
       labelAccessorFn: (LinearUsage usage, _) => usage.watts.toString(),
       data: data,
     )
   ];
-
 
   final List<Widget> views = <Widget>[
     Home(),
@@ -46,6 +45,18 @@ class _NavigationViewState extends State<NavigationView> {
     setState(() {
       currentViewIndex = index;
     });
+  }
+
+  /**
+   * Fetch data from firestore
+   */
+  void _fetchData() {
+    Firestore.instance
+        .collection('talks')
+        .where("topic", isEqualTo: "flutter")
+        .snapshots()
+        .listen((data) =>
+        data.documents.forEach((doc) => print(doc["title"])));
   }
 
   @override

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "279375293047",
+    "firebase_url": "https://energy-berry.firebaseio.com",
+    "project_id": "energy-berry",
+    "storage_bucket": "energy-berry.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279375293047:android:82d9d463fff49265",
+        "android_client_info": {
+          "package_name": "com.energyberry.energyberry"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "279375293047-oc3s584ccuuulu02a5firifkahsef64i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMCpIKuKAz8AGmCsH3_Fk_gYHj2tpQaxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "279375293047-oc3s584ccuuulu02a5firifkahsef64i.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "279375293047-4l6ft4goerjb2lp4sjkbnm3ue62hrk8k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.energyberry.energyBerry"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
