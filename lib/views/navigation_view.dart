@@ -1,6 +1,8 @@
 import 'package:energy_berry/views/home.dart';
 import 'package:energy_berry/views/usage.dart';
 import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+import 'dart:math';
 
 class NavigationView extends StatefulWidget {
 
@@ -11,11 +13,30 @@ class NavigationView extends StatefulWidget {
 
 class _NavigationViewState extends State<NavigationView> {
   int currentViewIndex = 0;
+  static final random = new Random();
+
+  static final data = [
+    new LinearSales(0, random.nextInt(100)),
+    new LinearSales(1, random.nextInt(100)),
+    new LinearSales(2, random.nextInt(100)),
+    new LinearSales(3, random.nextInt(100)),
+  ];
+
+  static List<charts.Series<LinearSales, num>> list = [
+    new charts.Series<LinearSales, int>(
+      id: 'Sales',
+      colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+      domainFn: (LinearSales sales, _) => sales.year,
+      measureFn: (LinearSales sales, _) => sales.sales,
+      data: data,
+    )
+  ];
+
 
   final List<Widget> views = <Widget>[
     Home(),
-    Usage(),
-    Usage()
+    Usage(list),
+    Usage(list)
   ];
 
   void _onNavigationTapped(int index) {
