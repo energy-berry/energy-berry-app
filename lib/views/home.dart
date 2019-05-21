@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:energy_berry/widgets/context_item.dart';
@@ -15,15 +16,54 @@ import 'package:flutter_blue/flutter_blue.dart';
 // In our project we manage the concept of Context, which is a set
 class Home extends StatefulWidget {
 
-  static FlutterBlue flutterBlue = FlutterBlue.instance;
-  Map devices = Map();
+  FlutterBlue flutterBlue = FlutterBlue.instance;
   var scanning = false;
+  var berries = <Widget>[]; // List to store context devices. i.e fan, microwave, light bulb, etc.
+
+  // BLE data
+  StreamSubscription<BluetoothDeviceState> deviceConnection;
+  static List<BluetoothService> services = new List();
+  BluetoothDevice enerbyBerryDevice;
+  BluetoothDeviceState stateBlue = null;
+
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+
+  void _connectToDevice() {
+    if(widget.stateBlue != BluetoothDeviceState.connected) {
+      print("Trying to connect...");
+
+      widget.deviceConnection = widget.flutterBlue.connect(widget.enerbyBerryDevice, autoConnect: false).listen((s) {
+        widget.stateBlue = s;
+
+        if(s == BluetoothDeviceState.connected) {
+          print("Conected!");
+          widget.enerbyBerryDevice.discoverServices().then((s) {
+            Home.services.clear();
+            print(s.length);
+            s.forEach((sb) {
+              print('Service detected ${sb.uuid}');
+
+              sb.characteristics.forEach((sc) => print("Characteristic ${sc.uuid}"));
+            });
+            Home.services = s;
+          });
+        }
+      });
+
+     //widget.deviceConnection.onError(widget._onErrorHandler);
+
+      widget.enerbyBerryDevice.onStateChanged().listen((newState) {
+        print("Device State changed: $newState");
+      });
+    } else {
+      print("Device already connected");
+    }
+  }
 
   //Scan for nearby BLE devices
   void _scan() {
@@ -48,7 +88,7 @@ class _HomeState extends State<Home> {
               Container(
                 margin: EdgeInsets.only(top: 8, right: 8, left: 12, bottom: 8),
                 child: Text(
-                  "Buscando berries",
+                  "Conectando...",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18
@@ -62,20 +102,32 @@ class _HomeState extends State<Home> {
       );
 
       print("Scanning... ");
+      widget.enerbyBerryDevice = null;
 
       /// Start scanning
-      Home.flutterBlue.scan(
+      widget.flutterBlue.scan(
           timeout: const Duration(seconds: 4)
       ).listen((scanResult) {
-        /*print('DeviceId: ${scanResult.device.id}');
-        print('DeviceName: ${scanResult.device.name}');
+        if(scanResult.device.name.isNotEmpty) {
+          print('DeviceId: ${scanResult.device.id}');
+          print('DeviceName: ${scanResult.device.name}');
+        }
 
-        print('localName: ${scanResult.advertisementData.localName}');
+        if(scanResult.device.name == "Enegy Berry Module") {
+          widget.enerbyBerryDevice = scanResult.device;
+          _connectToDevice();
+          setState(() {
+            widget.berries.clear();
+            widget.berries.add(ContextItem(0, widget.enerbyBerryDevice, "Luz", "bulb.png"));
+            widget.berries.add(ContextItem(1, widget.enerbyBerryDevice, "Ventilador", "fan.png"));
+            widget.berries.add(ContextItem(2, widget.enerbyBerryDevice, "Microondas", "microwave.png"));
+          });
+        }
+
+        /*print('localName: ${scanResult.advertisementData.localName}');
         print('manufacturerData: ${scanResult.advertisementData.manufacturerData}');
         print('serviceData: ${scanResult.advertisementData.serviceData}');*/
 
-        if (!widget.devices.containsKey(scanResult.device.id.id))
-          widget.devices[scanResult.device.id.id] = scanResult.device;
       }).onDone(() {
         setState(() {
           Navigator.pop(context); //pop dialog
@@ -87,8 +139,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    var berries = <Widget>[]; // List to store context devices
-
     var chart = Container(
         height: 210,
         margin: EdgeInsets.only(left: 12, right: 12),
@@ -109,16 +159,11 @@ class _HomeState extends State<Home> {
     //BluetoothDevice testDevice = new BluetoothDevice(id: DeviceIdentifier("00000000-0000-0000-0000-987bf3767eea"), name: "Test");
     //berries.add(ContextItem(testDevice));
 
-    widget.devices.forEach((id, d) {
-      if (d.name.toString().isNotEmpty)
-        berries.add(ContextItem(d));
-    });
-
     var grid = Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
 
-      children: berries
+      children: widget.berries
     );
 
     return ListView(children: <Widget>[
@@ -143,7 +188,7 @@ class _HomeState extends State<Home> {
           alignment: Alignment.center,
           child: RaisedButton(
               onPressed: _scan,
-              child: Text("Buscar berries")
+              child: Text("Conectar a Berry Box")
           )
       ),
 

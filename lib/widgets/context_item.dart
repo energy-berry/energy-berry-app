@@ -14,69 +14,13 @@ class ContextItem extends StatefulWidget {
   // Device state and info
   var activated;
   var title = "No name";
+  var iconName = "bulb.png";
+  var index = 0;
 
   // BLE data
-  StreamSubscription<BluetoothDeviceState> deviceConnection;
-  List<BluetoothService> services = new List();
   BluetoothDevice device;
-  BluetoothDeviceState stateBlue = null;
 
-  ContextItem(this.device, {this.activated = false}) {
-    Home.flutterBlue.setLogLevel(LogLevel.emergency);
-    title = device.name + " " + device.id.id;
-  }
-
-  void _onErrorHandler(error) {
-    print('There was an error :c ${error}');
-
-    /*showDialog(
-      context: context,
-      barrierDismissible: false,
-      child: Dialog(
-        child: Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 223, 230, 233)
-          ),
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(top: 8, right: 8, left: 12, bottom: 8),
-                child: Text(
-                  error,
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 213, 48, 48),
-                    fontSize: 18
-                  ),
-                )
-              ),
-
-              FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    'OK',
-                    style: TextStyle(color: Colors.deepPurple, fontSize: 18.0),
-                  ))
-            ],
-          ),
-        ),
-      )
-    );*/
-
-    //deviceConnection.cancel();
-    /*device.discoverServices().then((s) {
-      services.clear();
-      print(s.length);
-      s.forEach((sb) {
-        // print('Servicio agregado ${sb.uuid}');
-
-        //sb.characteristics.forEach((sc) => print("Caracteristica ${sc.uuid}"));
-      });
-      services = s;
-    });*/
-  }
+  ContextItem(this.index, this.device, this.title, this.iconName, {this.activated = false});
 
   @override
   _ContextItemState createState() => _ContextItemState();
@@ -95,43 +39,18 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
   }
 
   void _onTap() {
-    if(widget.stateBlue != BluetoothDeviceState.connected) {
-      print("Trying to connect...");
+    setState(() {
+      Home.services.forEach((s) {
+        if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') {
+          widget.activated = !widget.activated;
+          var info = "${widget.index}|${widget.activated ? 0x00 : 0x64}|NOW";
 
-      widget.deviceConnection = Home.flutterBlue.connect(widget.device, autoConnect: false).listen((s) {
-        widget.stateBlue = s;
-
-        if(s == BluetoothDeviceState.connected) {
-          print("Conected!");
-          widget.device.discoverServices().then((s) {
-            widget.services.clear();
-            print(s.length);
-            s.forEach((sb) {
-              print('Service detected ${sb.uuid}');
-
-              sb.characteristics.forEach((sc) => print("Characteristic ${sc.uuid}"));
-            });
-            widget.services = s;
-          });
+          s.characteristics.forEach((c) => _writeCharacteristic(c, utf8.encode(info)));
         }
       });
-
-      widget.deviceConnection.onError(widget._onErrorHandler);
-
-      widget.device.onStateChanged().listen((newState) {
-        print("Device State changed: $newState");
-      });
-    } else {
-      setState(() {
-        widget.activated = !widget.activated;
-
-        widget.services.forEach((s) {
-          if(s.uuid.toString() == '0000180f-0000-1000-8000-00805f9b34fb')
-            s.characteristics.forEach((c) => _writeCharacteristic(c, [widget.activated ? 0x00 : 0x64]));
-        });
-      });
-      // Remove all value changed listeners
-      /*widget.services..forEach((uuid, sub) => sub.cancel());
+    });
+    // Remove all value changed listeners
+    /*widget.services..forEach((uuid, sub) => sub.cancel());
       valueChangedSubscriptions.clear();
       deviceStateSubscription?.cancel();
       deviceStateSubscription = null;
@@ -140,7 +59,6 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
       setState(() {
         device = null;
       });*/
-    }
   }
 
   void _showDialog() {
@@ -175,7 +93,7 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
                   Container(
                     padding: EdgeInsets.all(20),
                     child: Image.asset(
-                      "assets/img/navigation/bulb.png",
+                      "assets/img/navigation/${widget.iconName}",
                       color: widget.activated ? Colors.white : Colors.black,
                       width: 60,
                     ),
@@ -187,8 +105,8 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
 
   @override
   void onDimmerChanged(int value) {
-    widget.services.forEach((s) {
-      if(s.uuid.toString() == '0000180f-0000-1000-8000-00805f9b34fb') // Battery Service
+    Home.services.forEach((s) {
+      if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') // Battery Service
         s.characteristics.forEach((c) => _writeCharacteristic(c, [value & 0xff]));
     });
   }
@@ -198,7 +116,7 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
     int epoch = (time.millisecondsSinceEpoch/1000).floor(); // Convert to seconds
     print("My epoch $epoch");
 
-    widget.services.forEach((s) {
+    Home.services.forEach((s) {
       if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') // Current Time Service
         s.characteristics.forEach((c) => _writeCharacteristic(c, utf8.encode(epoch.toString())));
     });
