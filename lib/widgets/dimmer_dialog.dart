@@ -81,7 +81,7 @@ class _DimmerDialogState extends State<DimmerDialog> {
               
               FlatButton(
                   onPressed: () {
-                    widget.dialogListener.onDialogOk(widget.date);
+                    widget.dialogListener.onDialogOk(widget.date, widget.value);
                     Navigator.of(context).pop();
                   },
                   child: Text(
@@ -99,5 +99,5 @@ abstract class DimmerListener {
 }
 
 abstract class DialogListener {
-  void onDialogOk(DateTime time);
+  void onDialogOk(DateTime time, int dimmerValue);
 }

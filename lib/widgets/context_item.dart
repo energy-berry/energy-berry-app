@@ -44,6 +44,7 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
         if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') {
           widget.activated = !widget.activated;
           var info = "${widget.index}|${widget.activated ? 0x00 : 0x64}|NOW";
+          print(info);
 
           s.characteristics.forEach((c) => _writeCharacteristic(c, utf8.encode(info)));
         }
@@ -106,19 +107,28 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
   @override
   void onDimmerChanged(int value) {
     Home.services.forEach((s) {
-      if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') // Battery Service
-        s.characteristics.forEach((c) => _writeCharacteristic(c, [value & 0xff]));
+      if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') { // Current Time Service
+        var info = "${widget.index}|$value|NOW";
+        print(info);
+
+        s.characteristics.forEach((c) =>
+            _writeCharacteristic(c, [value & 0xff]));
+      }
     });
   }
 
   @override
-  void onDialogOk(DateTime time) {
+  void onDialogOk(DateTime time, int dimmerValue) {
     int epoch = (time.millisecondsSinceEpoch/1000).floor(); // Convert to seconds
-    print("My epoch $epoch");
 
     Home.services.forEach((s) {
-      if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') // Current Time Service
-        s.characteristics.forEach((c) => _writeCharacteristic(c, utf8.encode(epoch.toString())));
+      if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') { // Current Time Service
+        var info = "${widget.index}|$dimmerValue|$epoch";
+        print(info);
+
+        s.characteristics.forEach((c) =>
+            _writeCharacteristic(c, utf8.encode(epoch.toString())));
+      }
     });
   }
 

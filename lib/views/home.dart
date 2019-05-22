@@ -26,7 +26,6 @@ class Home extends StatefulWidget {
   BluetoothDevice enerbyBerryDevice;
   BluetoothDeviceState stateBlue = null;
 
-
   @override
   _HomeState createState() => _HomeState();
 }
@@ -61,6 +60,18 @@ class _HomeState extends State<Home> {
         print("Device State changed: $newState");
       });
     } else {
+
+      // Remove all value changed listeners
+      /*widget.enerbyBerryDevice.services.forEach((uuid, sub) => sub.cancel());
+      valueChangedSubscriptions.clear();
+      deviceStateSubscription?.cancel();
+      deviceStateSubscription = null;
+      widget.deviceConnection?.cancel();
+      widget.deviceConnection = null;*/
+
+      setState(() {
+        widget.enerbyBerryDevice = null;
+      });
       print("Device already connected");
     }
   }
@@ -106,7 +117,7 @@ class _HomeState extends State<Home> {
 
       /// Start scanning
       widget.flutterBlue.scan(
-          timeout: const Duration(seconds: 4)
+          timeout: const Duration(seconds: 2)
       ).listen((scanResult) {
         if(scanResult.device.name.isNotEmpty) {
           print('DeviceId: ${scanResult.device.id}');
@@ -121,6 +132,8 @@ class _HomeState extends State<Home> {
             widget.berries.add(ContextItem(0, widget.enerbyBerryDevice, "Luz", "bulb.png"));
             widget.berries.add(ContextItem(1, widget.enerbyBerryDevice, "Ventilador", "fan.png"));
             widget.berries.add(ContextItem(2, widget.enerbyBerryDevice, "Microondas", "microwave.png"));
+
+            widget.scanning = false;
           });
         }
 
