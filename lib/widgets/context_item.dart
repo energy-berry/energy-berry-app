@@ -43,7 +43,7 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
       Home.services.forEach((s) {
         if(s.uuid.toString() == '00001805-0000-1000-8000-00805f9b34fb') {
           widget.activated = !widget.activated;
-          var info = "${widget.index}|${widget.activated ? 0x00 : 0x64}|NOW";
+          var info = "${widget.index}|${widget.activated ? "ON" : "OFF"}|NOW";
           print(info);
 
           s.characteristics.forEach((c) => _writeCharacteristic(c, utf8.encode(info)));
@@ -112,7 +112,7 @@ class _ContextItemState extends State<ContextItem> implements DimmerListener, Di
         print(info);
 
         s.characteristics.forEach((c) =>
-            _writeCharacteristic(c, [value & 0xff]));
+            _writeCharacteristic(c, utf8.encode(info)));
       }
     });
   }
